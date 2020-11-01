@@ -1,26 +1,22 @@
-﻿#define DEBUG
-
-using System;
+﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 namespace OsuPackUnpacker {
 
     /// <summary>
     /// Google Drive Downloader 
     /// </summary>
-    public class GDDownloader : IPacksDownloader, IDisposable {
+    public class GDDownloader : IPacksDownloader {
 
         #region Private Fields
 
         private readonly string _apiKey;
 
         private readonly HttpClient _httpClient;
-
-        private readonly List<(string nameFile, string filePath)> _files;
 
         private const string GOOGLE_API_ROOT = "https://www.googleapis.com";
         #endregion
@@ -35,47 +31,27 @@ namespace OsuPackUnpacker {
 
             _apiKey = apiKey;
 
-            _files = new();
-
             _httpClient = new();
-        }
-        #endregion
-
-        #region IDispasable Implementation
-
-        public void Dispose() {
-
-            _httpClient.Dispose();
         }
         #endregion
 
         #region IPacksDownloader Implementation
 
-        /// [WIP]
-        /// <summary>
-        /// Downloads a file of google drive 
-        /// </summary>
-        /// <param name="fileId">The Id of the google drive file</param>
-        public async Task Download(string fileId) {
+        public async Task<Stream> GetFileAsStream(string fileId) {
 
-            var querry = $"id={fileId}&export=download";
+            var querry = $"key={_apiKey}&alt=media";
 #if DEBUG
             Console.WriteLine($"\nDownloading: {fileId}\n");
 #endif
             var response = await _httpClient.SendAsync(new HttpRequestMessage() {
 
                 Method = HttpMethod.Get,
-                RequestUri = new Uri($"https://drive.google.com/uc?{querry}"),
-            });
-
-            var downloadLink = Regex.Match(
-                await response.Content.ReadAsStringAsync(), 
-                @"/uc\?export=download&amp;confirm=[^""]*").Value;
-
-            /// Then download file. (For later)
+                RequestUri = new Uri($"https://www.googleapis.com/drive/v3/files/{fileId}?{querry}"),
+            }, HttpCompletionOption.ResponseHeadersRead);
 #if DEBUG
-            Console.WriteLine($"File link: {downloadLink}");
-#endif
+            Console.WriteLine($"{response}\n");
+#endif  
+            return await response.Content.ReadAsStreamAsync();
         }
 
         /// <summary>
@@ -83,7 +59,9 @@ namespace OsuPackUnpacker {
         /// </summary>
         /// <param name="googleDriveFolderId">The Id of the google drive folder</param>
         /// <returns>A tuple array of (name of the file, their id)</returns>
-        public async Task<(string nameFile, string filePath)[]> ListFiles(string googleDriveFolderId) {
+        public async Task<(string filename, string fileId)[]> ListFiles(string googleDriveFolderId) {
+
+            var files = new List<(string nameFile, string filePath)>();
 
             var querry = $"key={_apiKey}&q='{googleDriveFolderId}'+in+parents";
 
@@ -100,13 +78,10 @@ namespace OsuPackUnpacker {
 
             await Task.Run(async () => {
 
-                var files = jsonDocument.RootElement.GetProperty("files")
+                var jsonFiles = jsonDocument.RootElement.GetProperty("files")
                     .EnumerateArray();
 
-                // For some reason Parallel.ForEach doesn't work
-                //Parallel.ForEach(files, async (file) => {
-
-                foreach (var file in files) {
+                foreach (var file in jsonFiles) {
 #if DEBUG
                     Console.WriteLine(file);
 #endif
@@ -114,18 +89,17 @@ namespace OsuPackUnpacker {
 
                     if (!file.GetProperty("mimeType").GetString().Contains("folder")) {
 
-                        _files.Add((file.GetProperty("name").GetString(), fileId));
+                        files.Add((file.GetProperty("name").GetString(), fileId));
                     }
 
                     else {
 
-                        await this.ListFiles(fileId);
+                        files.AddRange(await this.ListFiles(fileId));
                     }
                 }
-                //});
             });
 
-            return _files.ToArray();
+            return files.ToArray();
         }
         #endregion
     }

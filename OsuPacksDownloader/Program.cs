@@ -9,17 +9,21 @@ await GoogleAPITest();
 
 static async Task GoogleAPITest() {
 
+    var apiKey = Environment.GetEnvironmentVariable("GoogleApiKey");
+
     Stopwatch stopwatch = new();
     stopwatch.Start();
 
-    using var gdD = new GDDownloader(Environment.GetEnvironmentVariable("GoogleApiKey"));
+    IPacksDownloader gdD = new GDDownloader(apiKey);
 
     var files = await gdD.ListFiles(testFolderId);
 
-    foreach (var file in files) {
+    Console.WriteLine(files.Length);
 
-        await gdD.Download(file.filePath);
-    }
+    //foreach (var file in files) {
+
+    //    await gdD.GetFileAsStream(file.fileId);
+    //}
 
     // Just for testing
     Console.WriteLine(stopwatch.ElapsedMilliseconds);
