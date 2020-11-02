@@ -14,7 +14,7 @@ static async Task GoogleAPITest() {
     Stopwatch stopwatch = new();
     stopwatch.Start();
 
-    IPacksDownloader gdD = new GDDownloader(apiKey);
+    IDownloader gdD = new GDDownloader(apiKey);
 
     var files = await gdD.ListFiles(testFolderId);
 

@@ -10,7 +10,7 @@ namespace OsuPackUnpacker {
     /// <summary>
     /// Google Drive Downloader 
     /// </summary>
-    public class GDDownloader : IPacksDownloader {
+    public class GDDownloader : IDownloader {
 
         #region Private Fields
 

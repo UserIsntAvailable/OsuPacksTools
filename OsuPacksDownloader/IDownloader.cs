@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace OsuPackUnpacker {
 
     // Just in case I want to change my file storage service
-    public interface IPacksDownloader {
+    public interface IDownloader {
 
         public async Task Download(string fileId, string path, CancellationToken cT = default) {
 
