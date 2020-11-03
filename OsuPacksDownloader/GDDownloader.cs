@@ -37,6 +37,10 @@ namespace OsuPackUnpacker {
 
         #region IPacksDownloader Implementation
 
+        /// <summary>
+        /// Gets a file stream data
+        /// </summary>
+        /// <param name="fileId">The Id of the google drive file</param>
         public async Task<Stream> GetFileAsStream(string fileId) {
 
             var querry = $"key={_apiKey}&alt=media";
@@ -58,7 +62,7 @@ namespace OsuPackUnpacker {
         /// Gets all the content of a google drive folder.
         /// </summary>
         /// <param name="googleDriveFolderId">The Id of the google drive folder</param>
-        /// <returns>A tuple array of (name of the file, their id)</returns>
+        /// <returns>A tuple array of (name of the file, his id)</returns>
         public async Task<(string filename, string fileId)[]> ListFiles(string googleDriveFolderId) {
 
             var files = new List<(string nameFile, string filePath)>();

@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPacksDownloader", "OsuPacksDownloader\OsuPacksDownloader.csproj", "{9729D79F-C5D1-453B-A37C-1A306A255A6D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuPacksDownloader.Tests", "OsuPacksDownloader.Tests\OsuPacksDownloader.Tests.csproj", "{ECA0B15E-06F3-4B43-A9DA-8894AFD44728}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuPacksUnpacker", "OsuPacksUnpacker\OsuPacksUnpacker.csproj", "{FACE1516-26B8-476B-8A2C-ADF08EE69B3A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{9729D79F-C5D1-453B-A37C-1A306A255A6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9729D79F-C5D1-453B-A37C-1A306A255A6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9729D79F-C5D1-453B-A37C-1A306A255A6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECA0B15E-06F3-4B43-A9DA-8894AFD44728}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECA0B15E-06F3-4B43-A9DA-8894AFD44728}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECA0B15E-06F3-4B43-A9DA-8894AFD44728}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECA0B15E-06F3-4B43-A9DA-8894AFD44728}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FACE1516-26B8-476B-8A2C-ADF08EE69B3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FACE1516-26B8-476B-8A2C-ADF08EE69B3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FACE1516-26B8-476B-8A2C-ADF08EE69B3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FACE1516-26B8-476B-8A2C-ADF08EE69B3A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
