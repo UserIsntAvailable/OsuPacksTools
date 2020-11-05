@@ -10,4 +10,9 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
 
+  <ItemGroup>
+	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+		<_Parameter1>OsuPacksDownloader.Tests</_Parameter1>
+	</AssemblyAttribute>
+  </ItemGroup>
 </Project>

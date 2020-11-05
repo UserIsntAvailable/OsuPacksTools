@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -27,11 +28,16 @@ namespace OsuPackUnpacker {
         /// Initialize a <see cref="GDDownloader"/> instance
         /// </summary>
         /// <param name="apiKey">Your google API key <see cref="https://developers.google.com/api-client-library/dotnet/get_started"/></param>
-        public GDDownloader(string apiKey) {
+        public GDDownloader(string apiKey) : this(apiKey, new HttpClientHandler()) { }
 
-            _apiKey = apiKey;
+        /// <summary>
+        /// Initialize a <see cref="GDDownloader"/> instance for Unit testing purposes
+        /// </summary>
+        internal GDDownloader(string moqApiKey, HttpMessageHandler handler) {
 
-            _httpClient = new();
+            _apiKey = moqApiKey;
+
+            _httpClient = new(handler);
         }
         #endregion
 
@@ -50,7 +56,7 @@ namespace OsuPackUnpacker {
             var response = await _httpClient.SendAsync(new HttpRequestMessage() {
 
                 Method = HttpMethod.Get,
-                RequestUri = new Uri($"https://www.googleapis.com/drive/v3/files/{fileId}?{querry}"),
+                RequestUri = new Uri($"{GOOGLE_API_ROOT}/drive/v3/files/{fileId}?{querry}"),
             }, HttpCompletionOption.ResponseHeadersRead);
 #if DEBUG
             Console.WriteLine($"{response}\n");
@@ -79,6 +85,30 @@ namespace OsuPackUnpacker {
 #endif
             using JsonDocument jsonDocument
                 = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+
+            if (jsonDocument.RootElement.TryGetProperty("error", out JsonElement errorJson)) {
+
+                var reason = errorJson.GetProperty("errors")
+                    .EnumerateArray()
+                    .ElementAt(0)
+                    .GetProperty("reason")
+                    .ToString();
+
+                if (reason == "keyInvalid") {
+
+                    throw new ArgumentException("The api key passed to the constructor is invalid", "apiKey");
+                }
+
+                else if (reason == "notFound") {
+
+                    throw new ArgumentException("The google drive folder id was not found", nameof(googleDriveFolderId));
+                }
+
+                else {
+
+                    throw new Exception($"Unexpected reason\n {errorJson}");
+                }
+            }
 
             await Task.Run(async () => {
 
