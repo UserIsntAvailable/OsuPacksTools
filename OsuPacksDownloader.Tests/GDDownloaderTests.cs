@@ -169,12 +169,12 @@ namespace OsuPacksDownloader.Tests {
                     await new GDDownloader(Guid.NewGuid().ToString(), moqHttp)
                         .ListFiles(Guid.NewGuid().ToString()));
 
-			/*There are some weird indentation problems with JsonDocument,
+            /*There are some weird indentation problems with JsonDocument,
               I can't compare the two strings*/
             Assert.True(
-				(await ex).Message.Contains(@"""reason"": ""unexpected""")
-				&& 
-				errorJsonResponse.Contains(@"""reason"": ""unexpected"""));
+                (await ex).Message.Contains(@"""reason"": ""unexpected""")
+                &&
+                errorJsonResponse.Contains(@"""reason"": ""unexpected"""));
         }
     }
 }
