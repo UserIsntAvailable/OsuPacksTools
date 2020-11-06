@@ -41,7 +41,7 @@ namespace OsuPackUnpacker {
         }
         #endregion
 
-        #region IPacksDownloader Implementation
+        #region IDownloader Implementation
 
         /// <summary>
         /// Gets a file stream data
@@ -58,22 +58,28 @@ namespace OsuPackUnpacker {
                 Method = HttpMethod.Get,
                 RequestUri = new Uri($"{GOOGLE_API_ROOT}/drive/v3/files/{fileId}?{querry}"),
             }, HttpCompletionOption.ResponseHeadersRead);
+
+            var stream = await response.Content.ReadAsStreamAsync();
+
+            ThrowExceptionIfRequestFailed(
+                await JsonDocument.ParseAsync(stream),
+                nameof(fileId));
 #if DEBUG
             Console.WriteLine($"{response}\n");
 #endif  
-            return await response.Content.ReadAsStreamAsync();
+            return stream;
         }
 
         /// <summary>
-        /// Gets all the content of a google drive folder.
+        /// Gets all the files of a google drive folder ( including subdirectories ).
         /// </summary>
-        /// <param name="googleDriveFolderId">The Id of the google drive folder</param>
+        /// <param name="folderId">The Id of the google drive folder</param>
         /// <returns>A tuple array of (name of the file, his id)</returns>
-        public async Task<(string filename, string fileId)[]> ListFiles(string googleDriveFolderId) {
+        public async Task<(string filename, string fileId)[]> ListFiles(string folderId) {
 
             var files = new List<(string nameFile, string filePath)>();
 
-            var querry = $"key={_apiKey}&q='{googleDriveFolderId}'+in+parents";
+            var querry = $"key={_apiKey}&q='{folderId}'+in+parents";
 
             var response = await _httpClient.SendAsync(new HttpRequestMessage() {
 
@@ -86,29 +92,7 @@ namespace OsuPackUnpacker {
             using JsonDocument jsonDocument
                 = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
 
-            if (jsonDocument.RootElement.TryGetProperty("error", out JsonElement errorJson)) {
-
-                var reason = errorJson.GetProperty("errors")
-                    .EnumerateArray()
-                    .ElementAt(0)
-                    .GetProperty("reason")
-                    .ToString();
-
-                if (reason == "keyInvalid") {
-
-                    throw new ArgumentException("The api key passed to the constructor is invalid", "apiKey");
-                }
-
-                else if (reason == "notFound") {
-
-                    throw new ArgumentException("The google drive folder id was not found", nameof(googleDriveFolderId));
-                }
-
-                else {
-
-                    throw new Exception($"Unexpected reason\n {errorJson}");
-                }
-            }
+            ThrowExceptionIfRequestFailed(jsonDocument, nameof(folderId));
 
             await Task.Run(async () => {
 
@@ -134,6 +118,36 @@ namespace OsuPackUnpacker {
             });
 
             return files.ToArray();
+        }
+        #endregion
+
+        #region Private Methods
+
+        private void ThrowExceptionIfRequestFailed(JsonDocument reqJson, string notFoundArgument) {
+
+            if (reqJson.RootElement.TryGetProperty("error", out JsonElement errorJson)) {
+
+                var reason = errorJson.GetProperty("errors")
+                    .EnumerateArray()
+                    .ElementAt(0)
+                    .GetProperty("reason")
+                    .ToString();
+
+                if (reason == "keyInvalid") {
+
+                    throw new ArgumentException("The api key passed to the constructor is invalid", "apiKey");
+                }
+
+                else if (reason == "notFound") {
+
+                    throw new ArgumentException("The google drive folder/file id was not found", notFoundArgument);
+                }
+
+                else {
+
+                    throw new Exception($"Unexpected reason\n {errorJson}");
+                }
+            }
         }
         #endregion
     }

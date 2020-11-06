@@ -9,6 +9,98 @@ using RichardSzalay.MockHttp;
 namespace OsuPacksDownloader.Tests {
     public class GDDownloaderTests {
 
+        #region GetFileAsStream_Tests
+
+        [Fact]
+        public async Task GetFileAsStream_Throw_ArgumentException_ApiKey() {
+
+            var moqHttp = new MockHttpMessageHandler();
+            moqHttp.Fallback
+                .Respond("application/json", @"{
+""error"": {
+	""errors"": [
+		{
+		 ""domain"": ""usageLimits"",
+		 ""reason"": ""keyInvalid"",
+		 ""message"": ""Bad Request""
+		}
+	],
+	""code"": 400,
+	""message"": ""Bad Request""
+	}
+}");
+
+            var ex = Assert.ThrowsAsync<ArgumentException>(
+                async () =>
+                    await new GDDownloader(Guid.NewGuid().ToString(), moqHttp)
+                        .GetFileAsStream(Guid.NewGuid().ToString()));
+
+            Assert.Equal("The api key passed to the constructor is invalid (Parameter 'apiKey')", (await ex).Message);
+        }
+
+        [Fact]
+        public async Task GetFileAsStream_Throw_ArgumentException_FileId() {
+
+			var badFileId = Guid.NewGuid().ToString();
+
+			var moqHttp = new MockHttpMessageHandler();
+            moqHttp.Fallback
+                .Respond("application/json", $@"{{
+""error"": {{
+	""errors"": [
+		{{
+		 ""domain"": ""global"",
+		 ""reason"": ""notFound"",
+		 ""message"": ""File not found: {badFileId}"",
+		 ""locationType"": ""parameter"",
+		 ""location"": ""fileId""
+		}}
+	],
+	""code"": 404,
+	""message"": ""File not found: {badFileId}.""
+	}}
+}}");
+
+            var ex = Assert.ThrowsAsync<ArgumentException>(
+                async () =>
+                    await new GDDownloader(Guid.NewGuid().ToString(), moqHttp)
+                        .GetFileAsStream(badFileId));
+
+            Assert.Equal("The google drive folder/file id was not found (Parameter 'fileId')", (await ex).Message);
+        }
+
+        [Fact]
+        public async Task GetFileAsStream_Throw_Exception_UnexpectedReason() {
+
+            var errorJsonResponse = @"{
+""error"": {
+	""errors"": [
+		{
+		 ""domain"": ""local"",
+		 ""reason"": ""unexpected"",
+		 ""message"": ""Bad Request""
+		}
+	],
+	""code"": 400,
+	""message"": ""Bad Request""
+	}
+}";
+
+            var moqHttp = new MockHttpMessageHandler();
+            moqHttp.Fallback
+                .Respond("application/json", errorJsonResponse);
+
+            var ex = Assert.ThrowsAsync<Exception>(
+                async () =>
+                    await new GDDownloader(Guid.NewGuid().ToString(), moqHttp)
+                        .GetFileAsStream(Guid.NewGuid().ToString()));
+
+            Assert.Contains(@"""reason"": ""unexpected""", (await ex).Message);
+        }
+        #endregion
+
+        #region ListFiles_Tests
+
         [Fact]
         public async Task ListFiles_Should_Work() {
 
@@ -115,7 +207,7 @@ namespace OsuPacksDownloader.Tests {
         }
 
         [Fact]
-        public async Task ListFiles_Throw_ArgumentException_GoogleDriveFolderId() {
+        public async Task ListFiles_Throw_ArgumentException_FolderId() {
 
             var moqHttp = new MockHttpMessageHandler();
             moqHttp.Fallback
@@ -130,8 +222,8 @@ namespace OsuPacksDownloader.Tests {
 		 ""location"": ""fileId""
 		}
 	],
-	""code"": 400,
-	""message"": ""Bad Request""
+	""code"": 404,
+	""message"": ""File not found: .""
 	}
 }");
 
@@ -140,7 +232,7 @@ namespace OsuPacksDownloader.Tests {
                     await new GDDownloader(Guid.NewGuid().ToString(), moqHttp)
                         .ListFiles(Guid.NewGuid().ToString()));
 
-            Assert.Equal("The google drive folder id was not found (Parameter 'googleDriveFolderId')", (await ex).Message);
+            Assert.Equal("The google drive folder/file id was not found (Parameter 'folderId')", (await ex).Message);
         }
 
         [Fact]
@@ -169,12 +261,8 @@ namespace OsuPacksDownloader.Tests {
                     await new GDDownloader(Guid.NewGuid().ToString(), moqHttp)
                         .ListFiles(Guid.NewGuid().ToString()));
 
-            /*There are some weird indentation problems with JsonDocument,
-              I can't compare the two strings*/
-            Assert.True(
-                (await ex).Message.Contains(@"""reason"": ""unexpected""")
-                &&
-                errorJsonResponse.Contains(@"""reason"": ""unexpected"""));
+            Assert.Contains(@"""reason"": ""unexpected""", (await ex).Message);
         }
+        #endregion
     }
 }
