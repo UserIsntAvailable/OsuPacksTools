@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace OsuPackUnpacker {
+namespace OsuPacksDownloader {
 
     /// <summary>
     /// Google Drive Downloader 

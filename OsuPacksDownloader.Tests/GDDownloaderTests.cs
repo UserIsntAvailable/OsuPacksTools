@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using Xunit;
-using OsuPackUnpacker;
 using RichardSzalay.MockHttp;
 
 namespace OsuPacksDownloader.Tests {
@@ -41,9 +40,9 @@ namespace OsuPacksDownloader.Tests {
         [Fact]
         public async Task GetFileAsStream_Throw_ArgumentException_FileId() {
 
-			var badFileId = Guid.NewGuid().ToString();
+            var badFileId = Guid.NewGuid().ToString();
 
-			var moqHttp = new MockHttpMessageHandler();
+            var moqHttp = new MockHttpMessageHandler();
             moqHttp.Fallback
                 .Respond("application/json", $@"{{
 ""error"": {{

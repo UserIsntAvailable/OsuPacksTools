@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OsuPackUnpacker {
+namespace OsuPacksDownloader {
 
     // Just in case I want to change my file storage service
     public interface IDownloader {
