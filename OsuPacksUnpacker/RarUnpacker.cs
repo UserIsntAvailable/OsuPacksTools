@@ -21,7 +21,6 @@ namespace OsuPacksUnpacker {
         /// <param name="osuSongsFolderPath">The path of your osu songs folder</param>
         public RarUnpacker(string osuSongsFolderPath) => 
             _osuSongsFolderPath = osuSongsFolderPath;
-
         #endregion
 
         #region IUnpacker Implementation
@@ -51,7 +50,7 @@ namespace OsuPacksUnpacker {
                                 Overwrite = true
                             });
 
-                        OnFileUnpacked(currentEntry.Key);
+                        OnFileUnpacked($"{_osuSongsFolderPath}/{currentEntry.Key}");
                     }
                 }
             });
