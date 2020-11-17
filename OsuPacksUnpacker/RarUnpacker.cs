@@ -62,9 +62,9 @@ namespace OsuPacksUnpacker {
         /// <summary>
         /// Notify the listeners that a file was unpacked
         /// </summary>
-        /// <param name="filename">The name of the file</param>
-        protected virtual void OnFileUnpacked(string filename)
-            => FileUnpacked?.Invoke(this, filename);
+        /// <param name="filepath">The full path of the file</param>
+        protected virtual void OnFileUnpacked(string filepath)
+            => FileUnpacked?.Invoke(this, filepath);
         #endregion
     }
 }
