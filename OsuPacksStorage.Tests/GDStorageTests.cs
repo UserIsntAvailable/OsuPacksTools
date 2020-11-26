@@ -5,8 +5,8 @@ using System.Text.RegularExpressions;
 using Xunit;
 using RichardSzalay.MockHttp;
 
-namespace OsuPacksDownloader.Tests {
-    public class GDDownloaderTests {
+namespace OsuPacksStorage.Tests {
+    public class GDStorageTests {
 
         #region GetFileAsStream_Tests
 
@@ -31,7 +31,7 @@ namespace OsuPacksDownloader.Tests {
 
             var ex = Assert.ThrowsAsync<ArgumentException>(
                 async () =>
-                    await new GDDownloader(Guid.NewGuid().ToString(), moqHttp)
+                    await new GDDrive(Guid.NewGuid().ToString(), moqHttp)
                         .GetFileAsStream(Guid.NewGuid().ToString()));
 
             Assert.Equal("The api key passed to the constructor is invalid (Parameter 'apiKey')", (await ex).Message);
@@ -62,7 +62,7 @@ namespace OsuPacksDownloader.Tests {
 
             var ex = Assert.ThrowsAsync<ArgumentException>(
                 async () =>
-                    await new GDDownloader(Guid.NewGuid().ToString(), moqHttp)
+                    await new GDDrive(Guid.NewGuid().ToString(), moqHttp)
                         .GetFileAsStream(badFileId));
 
             Assert.Equal("The google drive folder/file id was not found (Parameter 'fileId')", (await ex).Message);
@@ -91,7 +91,7 @@ namespace OsuPacksDownloader.Tests {
 
             var ex = Assert.ThrowsAsync<Exception>(
                 async () =>
-                    await new GDDownloader(Guid.NewGuid().ToString(), moqHttp)
+                    await new GDDrive(Guid.NewGuid().ToString(), moqHttp)
                         .GetFileAsStream(Guid.NewGuid().ToString()));
 
             Assert.Contains(@"""reason"": ""unexpected""", (await ex).Message);
@@ -171,7 +171,7 @@ namespace OsuPacksDownloader.Tests {
 	]
 }}");
 
-            var files = await new GDDownloader(moqApiKey, moqHttp).ListFiles(moqMainFolderId);
+            var files = await new GDDrive(moqApiKey, moqHttp).ListFiles(moqMainFolderId);
 
             Assert.Equal(1, moqHttp.GetMatchCount(mainFolderResquest));
             Assert.Equal(moqPackFolderIds.Length, moqHttp.GetMatchCount(subFolderRequest));
@@ -199,7 +199,7 @@ namespace OsuPacksDownloader.Tests {
 
             var ex = Assert.ThrowsAsync<ArgumentException>(
                 async () =>
-                    await new GDDownloader(Guid.NewGuid().ToString(), moqHttp)
+                    await new GDDrive(Guid.NewGuid().ToString(), moqHttp)
                         .ListFiles(Guid.NewGuid().ToString()));
 
             Assert.Equal("The api key passed to the constructor is invalid (Parameter 'apiKey')", (await ex).Message);
@@ -228,7 +228,7 @@ namespace OsuPacksDownloader.Tests {
 
             var ex = Assert.ThrowsAsync<ArgumentException>(
                 async () =>
-                    await new GDDownloader(Guid.NewGuid().ToString(), moqHttp)
+                    await new GDDrive(Guid.NewGuid().ToString(), moqHttp)
                         .ListFiles(Guid.NewGuid().ToString()));
 
             Assert.Equal("The google drive folder/file id was not found (Parameter 'folderId')", (await ex).Message);
@@ -257,7 +257,7 @@ namespace OsuPacksDownloader.Tests {
 
             var ex = Assert.ThrowsAsync<Exception>(
                 async () =>
-                    await new GDDownloader(Guid.NewGuid().ToString(), moqHttp)
+                    await new GDDrive(Guid.NewGuid().ToString(), moqHttp)
                         .ListFiles(Guid.NewGuid().ToString()));
 
             Assert.Contains(@"""reason"": ""unexpected""", (await ex).Message);

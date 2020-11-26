@@ -6,12 +6,12 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace OsuPacksDownloader {
+namespace OsuPacksStorage {
 
     /// <summary>
-    /// Google Drive Downloader 
+    /// Google Drive cloud storage API
     /// </summary>
-    public class GDDownloader : IDownloader {
+    public class GDDrive : IStorage {
 
         #region Private Fields
 
@@ -25,15 +25,15 @@ namespace OsuPacksDownloader {
         #region Constructor
 
         /// <summary>
-        /// Initialize a <see cref="GDDownloader"/> instance
+        /// Initialize a <see cref="GDDrive"/> instance
         /// </summary>
         /// <param name="apiKey">Your google API key <see cref="https://developers.google.com/api-client-library/dotnet/get_started"/></param>
-        public GDDownloader(string apiKey) : this(apiKey, new HttpClientHandler()) { }
+        public GDDrive(string apiKey) : this(apiKey, new HttpClientHandler()) { }
 
         /// <summary>
-        /// Initialize a <see cref="GDDownloader"/> instance for Unit testing purposes
+        /// Initialize a <see cref="GDDrive"/> instance for Unit testing purposes
         /// </summary>
-        internal GDDownloader(string moqApiKey, HttpMessageHandler handler) {
+        internal GDDrive(string moqApiKey, HttpMessageHandler handler) {
 
             _apiKey = moqApiKey;
 
@@ -41,7 +41,7 @@ namespace OsuPacksDownloader {
         }
         #endregion
 
-        #region IDownloader Implementation
+        #region IStorage Implementation
 
         /// <summary>
         /// Gets a file stream data
@@ -74,7 +74,7 @@ namespace OsuPacksDownloader {
         }
 
         /// <summary>
-        /// Gets all the files of a google drive folder ( including subdirectories ).
+        /// Gets all the files of a folder ( including subdirectories ).
         /// </summary>
         /// <param name="folderId">The Id of the google drive folder</param>
         /// <returns>A tuple array of (name of the file, his id)</returns>

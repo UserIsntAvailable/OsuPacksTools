@@ -9,6 +9,6 @@
     <PackageReference Include="ppy.osu.Game" Version="2020.1114.0" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.20371.2" />
 	<ProjectReference Include="..\OsuPacksUnpacker\OsuPacksUnpacker.csproj" />
-	<ProjectReference Include="..\OsuPacksDownloader\OsuPacksDownloader.csproj" />
+	<ProjectReference Include="..\OsuPacksStorage\OsuPacksStorage.csproj" />
   </ItemGroup>
 </Project>

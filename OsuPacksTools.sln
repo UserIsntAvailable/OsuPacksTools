@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPacksDownloader", "OsuPacksDownloader\OsuPacksDownloader.csproj", "{9729D79F-C5D1-453B-A37C-1A306A255A6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPacksStorage", "OsuPacksStorage\OsuPacksStorage.csproj", "{9729D79F-C5D1-453B-A37C-1A306A255A6D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPacksDownloader.Tests", "OsuPacksDownloader.Tests\OsuPacksDownloader.Tests.csproj", "{ECA0B15E-06F3-4B43-A9DA-8894AFD44728}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPacksStorage.Tests", "OsuPacksStorage.Tests\OsuPacksStorage.Tests.csproj", "{ECA0B15E-06F3-4B43-A9DA-8894AFD44728}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OsuPacksUnpacker", "OsuPacksUnpacker\OsuPacksUnpacker.csproj", "{FACE1516-26B8-476B-8A2C-ADF08EE69B3A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElesseyPacks", "ElesseyPacks\ElesseyPacks.csproj", "{97C7F346-4D4B-4152-A7CC-60382DF6D1DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElesseyPacks.Tests", "ElesseyPacks.Tests\ElesseyPacks.Tests.csproj", "{25E75C99-60A3-4090-9BE0-CCB050BE65A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElesseyPacks.Tests", "ElesseyPacks.Tests\ElesseyPacks.Tests.csproj", "{25E75C99-60A3-4090-9BE0-CCB050BE65A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

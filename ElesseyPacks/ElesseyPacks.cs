@@ -7,8 +7,8 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.IO.Compression;
+using OsuPacksStorage;
 using OsuPacksUnpacker;
-using OsuPacksDownloader;
 using osu.Game.Beatmaps;
 using osu.Game.Collections;
 using osu.Framework.Platform;
@@ -28,9 +28,9 @@ namespace ElesseyPacks {
 
         private CollectionManager _collectionManager;
 
-        private readonly IUnpacker _unpacker;
+        private readonly IStorage _storage;
 
-        private readonly IDownloader _downloader;
+        private readonly IUnpacker _unpacker;
         #endregion
 
         #region Constructor
@@ -65,7 +65,7 @@ namespace ElesseyPacks {
             _osuSongFolder = $"{osuFolder}/Songs";
             _collectionFilePath = $"{osuFolder}/{COLLECTION_NAME}";
 
-            _downloader = new GDDownloader(apiKey);
+            _storage = new GDDrive(apiKey);
             _unpacker = new RarUnpacker(_osuSongFolder);
         }
         #endregion
@@ -98,7 +98,7 @@ namespace ElesseyPacks {
                     _ => throw new ArgumentException($"This osu gamemode isn't avalaible: {osuMode}", nameof(osuModes)),
                 };
 
-                var packs = await _downloader.ListFiles(gdFolderId);
+                var packs = await _storage.ListFiles(gdFolderId);
 
                 if (packsToDownload is not null && packsToDownload.Any()) {
 
@@ -129,7 +129,7 @@ namespace ElesseyPacks {
 #if DEBUG
                     try {
 #endif
-                        var stream = await _downloader.GetFileAsStream(id);
+                        var stream = await _storage.GetFileAsStream(id);
                         await _unpacker.Unpack(stream);
 #if DEBUG
                     }
@@ -163,9 +163,9 @@ namespace ElesseyPacks {
 
             _collectionManager?.SaveToFile(_collectionFilePath);
         }
-#endregion
+        #endregion
 
-#region Private Methods
+        #region Private Methods
 
         private void OnFileUnpacked(object sender, string oszFilePath) {
 
@@ -182,6 +182,6 @@ namespace ElesseyPacks {
 
             _collectionManager.AddBeatmapCollection(_currentStreamName, beatmaps);
         }
-#endregion
+        #endregion
     }
 }
