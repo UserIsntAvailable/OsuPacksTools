@@ -62,13 +62,10 @@ namespace OsuPacksStorage {
             var stream = await response.Content.ReadAsStreamAsync();
 #if DEBUG
             Console.WriteLine($"{response}\n");
-#endif  
-            /* JsonDocument can't handle big streams ( in this case the rar packs are too big ),
-             * so I will do error handling when the content-type isn't rar ( that means that we got an error )*/
-            if (response.Content.Headers.ContentType.ToString() != "application/rar") {
+#endif
 
+            if (response.Content.Headers.ContentType.ToString() == "application/json")
                 ThrowExceptionIfRequestFailed(await JsonDocument.ParseAsync(stream), nameof(fileId));
-            }
 
             return stream;
         }
@@ -138,7 +135,7 @@ namespace OsuPacksStorage {
 
                 throw reason switch {
 
-                    "keyInvalid" => new ArgumentException("The api key passed to the constructor is invalid", "apiKey"),
+                    "keyInvalid" => new ArgumentException("The api key passed to the constructor is invalid", nameof(_apiKey)[1..]),
                     "notFound" => new ArgumentException("The google drive folder/file id was not found", notFoundArgument),
                     "downloadQuotaExceeded" => new Exception("You already used your downlaod quota for this file. See Readme for more information about this."),
                     _ => new Exception($"Unexpected reason\n {errorJson}"),
