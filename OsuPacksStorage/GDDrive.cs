@@ -53,17 +53,19 @@ namespace OsuPacksStorage {
 #if DEBUG
             Console.WriteLine($"\nDownloading: {fileId}\n");
 #endif
-            var response = await _httpClient.SendAsync(new HttpRequestMessage() {
+            using var httpReqMsg = new HttpRequestMessage() {
 
                 Method = HttpMethod.Get,
                 RequestUri = new Uri($"{GOOGLE_API_ROOT}/drive/v3/files/{fileId}?{querry}"),
-            }, HttpCompletionOption.ResponseHeadersRead);
+            };
+            using var response = await _httpClient.SendAsync(
+                httpReqMsg,
+                HttpCompletionOption.ResponseHeadersRead);
 
             var stream = await response.Content.ReadAsStreamAsync();
 #if DEBUG
             Console.WriteLine($"{response}\n");
 #endif
-
             if (response.Content.Headers.ContentType.ToString() == "application/json")
                 ThrowExceptionIfRequestFailed(await JsonDocument.ParseAsync(stream), nameof(fileId));
 
@@ -81,11 +83,12 @@ namespace OsuPacksStorage {
 
             var querry = $"key={_apiKey}&q='{folderId}'+in+parents";
 
-            var response = await _httpClient.SendAsync(new HttpRequestMessage() {
+            using var httpReqMsg = new HttpRequestMessage() {
 
                 Method = HttpMethod.Get,
                 RequestUri = new Uri($"{GOOGLE_API_ROOT}/drive/v3/files?{querry}"),
-            });
+            };
+            using var response = await _httpClient.SendAsync(httpReqMsg);
 #if DEBUG
             Console.WriteLine($"[ListFiles]Response\n{await response.Content.ReadAsStringAsync()}");
 #endif
@@ -109,7 +112,6 @@ namespace OsuPacksStorage {
 
                         files.Add((file.GetProperty("name").GetString(), fileId));
                     }
-
                     else {
 
                         files.AddRange(await this.ListFiles(fileId));
@@ -132,6 +134,8 @@ namespace OsuPacksStorage {
                     .ElementAt(0)
                     .GetProperty("reason")
                     .ToString();
+
+                reqJson.Dispose();
 
                 throw reason switch {
 

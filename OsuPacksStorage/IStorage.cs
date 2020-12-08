@@ -23,26 +23,12 @@ namespace OsuPacksStorage {
         /// <param name="path">Where the file will be saved</param>
         /// <param name="progress">An instance of a <see cref="IProgress{long}"/></param>
         /// <param name="cT">A cancellation token</param>
-        public async Task CopyToAsync(string file, string path, IProgress<long> progress = default, CancellationToken cT = default)
-            => await CopyToAsync(await GetFileAsStream(file), File.Create(path), progress, cT);
-        #endregion
+        public async Task CopyToAsync(string file, string path, IProgress<long> progress = default, CancellationToken cT = default) {
 
-        #region Private Methods
+            await using var fileStream = File.Create(path);
+            await using var storageStream = await GetFileAsStream(file);
 
-        private static async Task CopyToAsync(Stream source, Stream destination, IProgress<long> progress, CancellationToken cT) {
-
-            var buffer = new byte[0x1000];
-            int bytesRead;
-            long totalRead = 0;
-
-            while ((bytesRead = await source.ReadAsync(buffer.AsMemory(0, buffer.Length), cT)) > 0) {
-
-                await destination.WriteAsync(buffer.AsMemory(0, bytesRead), cT);
-                cT.ThrowIfCancellationRequested();
-                totalRead += bytesRead;
-                Thread.Sleep(10);
-                progress?.Report(totalRead);
-            }
+            await storageStream.CopyToAsync(fileStream, progress, cT);
         }
         #endregion
     }
